@@ -1,3 +1,4 @@
+require('dotenv').config()
 var createError = require('http-errors')
 var express = require('express')
 var path = require('path')
@@ -29,7 +30,7 @@ app.set('trust proxy', 1) // trust first proxy
 // 本质是 加密 cookie
 app.use(session({
   name: 'todo-session-id-233',
-  secret: 'sec-todo-255',
+  secret: process.env.SESSION_SECRET || 'fallback-dev-secret',
   resave: false,
   saveUninitialized: true,
   // If secure is set, and you access your site over HTTP,
