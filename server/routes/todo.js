@@ -3,7 +3,7 @@ var router = express.Router()
 const { query, validationResult } = require('express-validator')
 
 const Todo = require("../model/todo")
-const { RandomSlat } = require('../model/base')
+const { RandomSalt } = require('../model/base')
 
 router.get('/list/render', function (req, res, next) {
     res.render('todo', {})
@@ -43,7 +43,7 @@ router.get('/test', async function(req, res, next) {
     const number = req.query.number
     for (let i = 0; i < number; i++) {
         await Todo.create({
-            content: RandomSlat(),
+            content: RandomSalt(),
         })
     }
 

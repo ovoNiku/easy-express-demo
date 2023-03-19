@@ -1,7 +1,6 @@
 const { Sequelize, Op } = require('sequelize')
-var { dbclient, configfunc, RandomSlat, PasswordHash } = require('./base')
+const { dbclient, configfunc, RandomSalt, PasswordHash } = require('./base')
 
-//定义表的模型
 const User = dbclient.define('user', {
     id: {
         type: Sequelize.INTEGER,
@@ -11,7 +10,7 @@ const User = dbclient.define('user', {
     name: {
         type: Sequelize.TEXT,
     },
-    slat: {
+    salt: {
         type: Sequelize.TEXT,
     },
     password: {
@@ -19,46 +18,37 @@ const User = dbclient.define('user', {
     },
 }, configfunc('user'))
 
-// 创建表
 User.sync()
 
-// 这种框架的隐式 api 显示的写出来比较好
-// 不然每个人看这个代码都要学一遍 sequelize
 const UserCreate = async function(name, password) {
-    const slat = RandomSlat()
-    const hashPassword = await PasswordHash(password, slat)    
+    const salt = RandomSalt()
+    const hashPassword = await PasswordHash(password, salt)
     return await User.create({
         name: name,
-        slat: slat,
+        salt: salt,
         password: hashPassword,
-      })
+    })
 }
 
 const UserByName = async function(name) {
     return await User.findOne({
         where: {
-            name: {
-              [Op.eq]: name,
-            }
-          }
+            name: { [Op.eq]: name },
+        }
     })
 }
 
-const UserLogin = async function(name, poassword) {
+const UserLogin = async function(name, password) {
     const user = await UserByName(name)
     if (!user) {
         return null
     }
-    const hash = await PasswordHash(poassword, user.slat)
+    const hash = await PasswordHash(password, user.salt)
     return await User.findOne({
         where: {
-            name: {
-                [Op.eq]: name,
-            },
-            password: {
-                [Op.eq]: hash,
-            }
-          }
+            name: { [Op.eq]: name },
+            password: { [Op.eq]: hash },
+        }
     })
 }
 
