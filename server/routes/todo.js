@@ -1,55 +1,52 @@
-var express = require('express')
-var router = express.Router()
-const { query, validationResult } = require('express-validator')
+const express = require('express')
+const router = express.Router()
 
-const Todo = require("../model/todo")
+const Todo = require('../model/todo')
 const { RandomSalt } = require('../model/base')
 
-router.get('/list/render', function (req, res, next) {
+// 统一的 async 错误处理包装
+const asyncHandler = fn => (req, res, next) =>
+    Promise.resolve(fn(req, res, next)).catch(next)
+
+router.get('/list/render', function(req, res) {
     res.render('todo', {})
 })
 
-router.get('/add', function(req, res, next) {
-    const s = req.query.content
-    Promise.resolve(
-        Todo.create({
-            content: s,
-        })
-    ).then()
-    res.send('add todo: ' + s)
-})
+// 改为 POST，content 从 body 读取
+router.post('/add', asyncHandler(async function(req, res) {
+    const content = req.body.content
+    const todo = await Todo.create({ content })
+    res.send({ success: true, id: todo.id })
+}))
 
-router.get('/list', async function (req, res, next) {
-    // 每页固定10条
+router.get('/list', asyncHandler(async function(req, res) {
     const pageSize = 10
-    let pageNum = req.query.pageNum || 0
-    pageNum = parseInt(pageNum)
-    console.log(pageSize, pageNum)
-    let offset = pageSize * pageNum
-    const todoList = await Todo.findAll({ offset: offset, limit: pageSize })
-    const total = await Todo.count()
+    const pageNum = parseInt(req.query.pageNum) || 0
+    const offset = pageSize * pageNum
+
+    const [todoList, total] = await Promise.all([
+        Todo.findAll({ offset, limit: pageSize }),
+        Todo.count(),
+    ])
 
     res.send({
         success: true,
         dataList: todoList,
-        pageSize: pageSize,
-        pageNum: pageNum,
-        total: total,
+        pageSize,
+        pageNum,
+        total,
     })
-})
+}))
 
-router.get('/test', async function(req, res, next) {
-    // 用于随机生成 N 条测试数据
-    const number = req.query.number
-    for (let i = 0; i < number; i++) {
-        await Todo.create({
-            content: RandomSalt(),
-        })
-    }
-
-    res.send({
-        success: true,
-    })
-})
+// 仅在非生产环境可用
+if (process.env.NODE_ENV !== 'production') {
+    router.get('/test', asyncHandler(async function(req, res) {
+        const number = parseInt(req.query.number) || 1
+        for (let i = 0; i < number; i++) {
+            await Todo.create({ content: RandomSalt() })
+        }
+        res.send({ success: true })
+    }))
+}
 
 module.exports = router
