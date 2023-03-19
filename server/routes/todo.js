@@ -15,6 +15,9 @@ router.get('/list/render', function(req, res) {
 // 改为 POST，content 从 body 读取
 router.post('/add', asyncHandler(async function(req, res) {
     const content = req.body.content
+    if (!content) {
+        return res.status(400).send({ success: false, error: 'content is required' })
+    }
     const todo = await Todo.create({ content })
     res.send({ success: true, id: todo.id })
 }))
