@@ -1,4 +1,4 @@
-# nodejs-todo-server
+# todo-server
 
 ## 准备工作: 初始化项目
 
