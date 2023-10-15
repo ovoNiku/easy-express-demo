@@ -5,9 +5,6 @@
     ## 初始化 npm
     npm init
 
-    # 安装 express 依赖
-    npm install express --save
-
     # 安装 express 脚手架工具, 方便生成程序模版
     npm install -g express-generator
 
@@ -19,11 +16,12 @@
     # 安装依赖
     npm i
 
-    # 安装热更新插件支持快速开发, 全局安装 nodemon
     # 添加配置文件 nodemon.json, 配置见下文 
+    # 安装热更新插件支持快速开发, 全局安装 nodemon
     npm install -g nodemon
 
-    # 启动程序, 项目模版提供了启动入口, bin/www, 这里先用 index.js 顶替一下
+    # 创建程序启动入口 index.js 
+    # 启动程序, 项目模版提供了启动入口, bin/www
     nodemon index.js
 
     # 使用 session
