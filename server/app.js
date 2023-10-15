@@ -19,6 +19,22 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// session
+// 必须定义在 router 之前
+var session = require('express-session')
+app.set('trust proxy', 1) // trust first proxy
+// 本质是 加密 cookie
+app.use(session({
+  name: 'todo-session-id-233',
+  secret: 'sec-todo-255',
+  resave: false,
+  saveUninitialized: true,
+  // If secure is set, and you access your site over HTTP,
+  // the cookie will not be set
+  cookie: { secure: false }
+}))
+
+// router
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
