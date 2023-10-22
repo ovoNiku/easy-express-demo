@@ -14,7 +14,7 @@ https://sequelize.org/
 const { Sequelize, DataTypes } = require("sequelize")
 const sequelize = new Sequelize("database.db")
 
-const User = sequelize.define("user", {
+const Todo = sequelize.define("todo", {
     id: DataTypes.INTEGER, 
     content: DataTypes.TEXT,
 }, {
