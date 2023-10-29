@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分页</title>
+    <style>
+        .page-current {
+            background-color: aquamarine;
+        }
+    </style>
+</head>
+<body>
+    <p><a href="/todo/test?number=18" target="_blank">添加18条测试数据</a></p>
+    <ul class="list">
+    
+    </ul>
+
+    <div class="pagination">
+        
+    </div>
+
+<script>
+const item = (content) => {
+    return `<li>${content}</li>`
+}
+
+const button = (val) => {
+    return `<input type="button" value="${val}">`
+}
+
+const ulist = document.querySelector('.list')
+const pagination = document.querySelector('.pagination')
+
+const todoList = (pageNum) => {
+    const url = `/todo/list?pageNum=${pageNum}`
+
+    fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                // 填充内容, map 里面的叫做 lambda
+                // 当只有一个参数的时候参数可以不加括号
+                // 当只有一句代码的时候可以不写 return
+                const s = data.dataList.map(c=>item(c.content)).join('\n')
+                ulist.innerHTML = s
+
+                // 填充分页器
+                const totalPages = Math.ceil(data.total / data.pageSize)
+                // 生成 1~n 的数组的套路, 刚搜的
+                const plist = Array.from(new Array(totalPages).keys()).map(p => {
+                    return button(p)
+                }).join('\n')
+                pagination.innerHTML = plist
+
+                // 填充页码高亮, 理论上只有一个
+                const pageHighlight = '.page-current'
+                const currentPage = document.querySelector(pageHighlight)
+                if (currentPage) {
+                    currentPage.className = ''
+                } else {
+                    // 没找到说明是首次加载
+                }
+                // 构造一个值选择器
+                const sel = `input[value="${data.pageNum}"]`
+                document.querySelector(sel).className = 'page-current'
+                
+            }
+        })    
+}
+
+// 做一个委托绑定
+pagination.addEventListener('click', (e) => {
+    if (e.target.tagName == 'INPUT') {
+        const pn = e.target.value
+        todoList(pn)
+    }
+})
+
+const _main = () => {
+    // 启动页面的时候先加载一次
+    todoList(0)
+}
+
+_main()
+
+</script>
+</body>
+</html>
