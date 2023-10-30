@@ -1,5 +1,14 @@
 # todo-server
 
+node.js 项目
+
+- server 项目初始化
+- 使用 session 和 validator
+- 获取不同的参数 queryString / form / body / route params / 文件
+- 操作数据库(使用 sequelize orm)
+- 登录注册 带加密(仅考虑密码摘要)
+- 分页查询
+
 ## 准备工作: 初始化项目
 
     ## 初始化 npm
