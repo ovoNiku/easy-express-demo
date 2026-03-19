@@ -18,3 +18,7 @@
 >node -v
 v16.20.2
 ```
+
+update: 2025.03.09 
+
+让 claude code 帮我升了一下版本, 修了修以前的bug
